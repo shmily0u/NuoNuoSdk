@@ -35,7 +35,7 @@ public class NuoNuoOptions
     /// <summary>
     /// 超时时间
     /// </summary>
-    public int Timeout { get; set; } = 3;
+    public int Timeout { get; set; } = 30;
 
     /// <summary>
     /// Sdk版本(默认值和Java SDK版本一样)

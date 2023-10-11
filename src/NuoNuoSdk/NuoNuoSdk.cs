@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Net;
+using System.Security.Cryptography;
 using System.Web;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -109,6 +110,10 @@ public class NuoNuoSdk : INuoNuoSdk
             request.AccessToken = options.AccessToken;
         if (string.IsNullOrEmpty(request.AccessToken))
             throw new ArgumentNullException(nameof(request.AccessToken));
+        Verify(request.Method);
+        Verify(options.SdkRequestUrl);
+        Verify(options.AppKey);
+        Verify(options.AppSecret);
 
         //参数生成
         var nonce = new Random().Next(10000000, 99999999).ToString();
@@ -147,6 +152,11 @@ public class NuoNuoSdk : INuoNuoSdk
             _logger.LogInformation("诺诺请求:header: {@header} body: {body}", header, body);
 
         var res = await client.PostAsync(requestUri, httpContent);
+
+        if (res.StatusCode==HttpStatusCode.Forbidden)
+        {
+            throw new HttpRequestException($"诺诺请求异常:403 Forbidden");
+        }
         var data = await res.Content.ReadAsStringAsync();
         if (!res.IsSuccessStatusCode)
         {
@@ -155,6 +165,7 @@ public class NuoNuoSdk : INuoNuoSdk
         if (enableLog)
             _logger.LogInformation("诺诺返回:{data}", data);
 
+  
         var response = JsonConvert.DeserializeObject<TResponse>(data);
         response.Body = data;
         return response;
@@ -163,13 +174,19 @@ public class NuoNuoSdk : INuoNuoSdk
 
     #region private method
 
-    /// <summary>
-    /// 执行form请求
-    /// </summary>
-    /// <param name="dic"></param>
-    /// <param name="options"></param>
-    /// <returns></returns>
-    private async Task<string> PostFormAsync(Dictionary<string, string> dic, NuoNuoOptions options)
+    private void Verify(string v)
+    {
+        if (string.IsNullOrEmpty(v))
+            throw new  ArgumentNullException(nameof(v));
+    }
+
+        /// <summary>
+        /// 执行form请求
+        /// </summary>
+        /// <param name="dic"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        private async Task<string> PostFormAsync(Dictionary<string, string> dic, NuoNuoOptions options)
     {
         var client = _clientFactory.CreateClient(nameof(NuoNuoSdk));
         var req = new HttpRequestMessage(HttpMethod.Post, options.TokenRequestUrl)

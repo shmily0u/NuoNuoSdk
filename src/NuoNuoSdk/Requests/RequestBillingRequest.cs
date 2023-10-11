@@ -53,6 +53,28 @@ public class OrderDto
     public string BuyerAccount { get; set; }
 
     /// <summary>
+    /// 购买方经办人姓名（数电票特有字段)
+    /// </summary>
+    [JsonPropertyName(" buyerManagerName")]
+    [JsonProperty(" buyerManagerName")]
+    public string BuyerManagerName { get; set; }
+    /// <summary>
+    /// 经办人证件类型：101-组织机构代码证, 102-营业执照, 103-税务登记证, 199-其他单位证件, 
+    /// 201-居民身份证, 202-军官证,203-武警警官证, 204-士兵证, 205-军队离退休干部证, 
+    /// 206-残疾人证, 207-残疾军人证（1-8级）, 208-外国护照, 210-港澳居民来往内地通行证, 
+    /// 212-中华人民共和往来港澳通行证, 213-台湾居民来往大陆通行证, 214-大陆居民往来台湾通行证, 21外国人居留证, 216-外交官证 299-其他个人证件(数电发票特有)
+    /// </summary>
+    [JsonPropertyName(" managerCardType")]
+    [JsonProperty(" managerCardType")]
+    public string ManagerCardType { get; set; }
+    /// <summary>
+    /// 经办人证件号码（数电票特有字段）
+    /// </summary>
+    [JsonPropertyName(" managerCardNo")]
+    [JsonProperty(" managerCardNo")]
+    public string ManagerCardNo { get; set; }
+
+    /// <summary>
     /// 销方税号（使用沙箱环境请求时消息体参数salerTaxNum和消息头参数userTax填写339902999999789113）
     /// </summary>
     [JsonPropertyName("salerTaxNum")]
@@ -79,7 +101,12 @@ public class OrderDto
     [JsonPropertyName("salerAccount")]
     [JsonProperty("salerAccount")]
     public string SalerAccount { get; set; }
-
+    /// <summary>
+    /// 不传默认为0：都不显示；传1：备注仅显示销方开户行及账号；传2：备注仅显示购方开户行及账号；传3：购销方开户行及账号都显示（此字段仅在数电普票和数电专票下生效）
+    /// </summary>
+    [JsonPropertyName("showBankAccountType")]
+    [JsonProperty("showBankAccountType")]
+    public string ShowBankAccountType { get; set; }
     /// <summary>
     /// 订单号（每个企业唯一）
     /// </summary>
@@ -203,6 +230,20 @@ public class OrderDto
     public string Email { get; set; }
 
     /// <summary>
+    /// 抄送手机
+    /// </summary>
+    [JsonProperty("ccPhone")]
+    [JsonPropertyName("ccPhone")]
+    public string CcPhone { get; set; }
+
+    /// <summary>
+    /// 抄送邮件
+    /// </summary>
+    [JsonProperty("ccEmail")]
+    [JsonPropertyName("ccEmail")]
+    public string CcEmail { get; set; }
+
+    /// <summary>
     /// 开票类型：1:蓝票;2:红票
     /// </summary>
     [JsonProperty("invoiceType")]
@@ -210,12 +251,21 @@ public class OrderDto
     public string InvoiceType { get; set; }
 
     /// <summary>
-    /// 发票种类：p,普通发票(电票)(默认);c,普通发票(纸票);s,专用发票;e,收购发票(电票);
-    /// f,收购发票(纸质);r,普通发票(卷式);b,增值税电子专用发票;j,机动车销售统一发票;u,二手车销售统一发票
+    /// 发票种类：p,普通发票(电票)(默认);c,普通发票(纸票); s,专用发票;e,收购发票(电票); f,收购发票(纸质); r,普通发票(卷式); 
+    /// b,增值税电子专用发票; j,机动车销售统一发票;u,二手车销售统一发票; bs:电子发票(增值税专用发票)-即数电专票(电子),
+    /// pc:电子发票(普通发票)-即数电普票(电子),es:数电纸质发票(增值税专用发票)-即数电专票(纸质); ec:数电纸质发票(普通发票)-即数电普票(纸质)
     /// </summary>
     [JsonProperty("invoiceLine")]
     [JsonPropertyName("invoiceLine")]
     public string InvoiceLine { get; set; }
+    /// <summary>
+    /// 数电纸票类型(数电纸票时才需要传)：（票 种为ec时，默认04；票种为es时，默认为1130）; 04 2016版增值税普通发票（二联折叠票）, 
+    /// 05 2016版增值税普通发票（五联折叠票), 1130 增值税专用发票（中文三联无金额限制版）, 1140 增值税专用发票中文四联无金额限制版）, 
+    /// 1160 增值税专用发票（中文六联无金额限制版）, 1170增值税专用发票（中文七联无金额限制版
+    /// </summary>
+    [JsonProperty("paperInvoiceType")]
+    [JsonPropertyName("paperInvoiceType")]
+    public string PaperInvoiceType { get; set; }
 
     /// <summary>
     /// 特定要素：0普通发票（默认）、1成品油、31建安发票、32房地产销售发票、35矿产品
@@ -225,6 +275,14 @@ public class OrderDto
     public string SpecificFactor { get; set; }
 
     /// <summary>
+    /// 是否强制开具标识：0 否、1 是 （发票种类为u，且特定要素为 33-二手车发票反向开具时才需要填； 默认为 0；
+    /// 若为1时，则不校验卖方自然人身份证号的合规性）
+    ///</summary>
+    [JsonProperty("forceFlag")]
+    [JsonPropertyName("forceFlag")]
+    public string forceFlag { get; set; }
+
+    /// <summary>
     /// 代开标志：0非代开;1代开。
     /// 代开蓝票时备注要求填写文案：代开企业税号:***,代开企业名称:***；
     /// 代开红票时备注要求填写文案：对应正数发票代码:***号码:***代开企业税号:***代开企业名称:***
@@ -232,6 +290,19 @@ public class OrderDto
     [JsonProperty("proxyInvoiceFlag")]
     [JsonPropertyName("proxyInvoiceFlag")]
     public string ProxyInvoiceFlag { get; set; }
+    /// <summary>
+    /// 代办退税标记：0否（默认），1是；仅代 办退税资质企业可传1
+     /// </summary>
+    [JsonProperty("taxRebateProxy")]
+    [JsonPropertyName("taxRebateProxy")]
+    public string TaxRebateProxy { get; set; }
+    /// <summary>
+    /// 数电发票差额征税开具方式：01 全额开票(暂不支持），02 差额开票；非数电发票开具差额时，不传
+    /// </summary>
+    [JsonProperty("invoiceDifferenceType")]
+    [JsonPropertyName("invoiceDifferenceType")]
+    public string InvoiceDifferenceType { get; set; }
+
 
     /// <summary>
     /// 回传发票信息地址（开票完成、开票失败）
@@ -320,6 +391,53 @@ public class OrderDto
     [JsonProperty("secondHandCarInfo")]
     public Dictionary<string, string> SecondHandCarInfo { get; set; }
 
+
+    /// <summary>
+    /// 业务方自定义字段1，本应用只作保存
+    /// </summary>
+    [JsonPropertyName("bField1")]
+    [JsonProperty("bField1")]
+    public string BField1 { get; set; }
+    /// <summary>
+    /// 业务方自定义字段1，本应用只作保存
+    /// </summary>
+    [JsonPropertyName("bField2")]
+    [JsonProperty("bField2")]
+    public string BField2 { get; set; }
+    /// <summary>
+    /// 业务方自定义字段1，本应用只作保存
+    /// </summary>
+    [JsonPropertyName("bField3")]
+    [JsonProperty("bField3")]
+    public string BField3 { get; set; }
+    /// <summary>
+    /// 购买方自然人标志：0-否（默认），1-是；仅在开具数电普票(电子)时使用，如受票方（发票抬头）为自然人，并要求能将发票归集在个人票夹中展示，
+    /// 需提供姓名及身份证号（自然人纳税人识别号），此参数传入1；如受票方（发票抬头）为个体工商户，需提供社会统一信用代码或纳税人识别号，此参数传入0
+    /// </summary>
+    [JsonPropertyName("naturalPersonFlag")]
+    [JsonProperty("naturalPersonFlag")]
+    public string NaturalPersonFlag { get; set; }
+    /// <summary>
+    /// 数电农产品收购发票销售方证件类型，数电农产品收购必传，对应buyerTaxNum字段。103 税务登记证，201 居民身份证,208 外国护照，
+    /// 210 港澳居民来往内地通行证，213 台湾居民来往大陆通行证，215 外国人居留证，219 香港永久性居民身份证，220 台湾身份证，
+    /// 221 澳门特别行政区永久性居民身份证，233 外国人永久居留身份证（外国人永久居留证），299其他个人证件
+    /// </summary>
+    [JsonPropertyName("certificateType")]
+    [JsonProperty("certificateType")]
+    public string CertificateType { get; set; }
+    /// <summary>
+    /// 对购方税号校验（ 0-不校验 1-校验，仅数电票有效，未传时则取企业配置的值；注：若开启校验，当购方税号未能在电子税局中找到时 则会开票失败）
+    /// </summary>
+    [JsonPropertyName("taxNumVerifyFlag")]
+    [JsonProperty("taxNumVerifyFlag")]
+    public string TaxNumVerifyFlag { get; set; }
+    /// <summary>
+    /// 对购方名称校验（ 0-不校验 1-校验，仅对数电普票（电子）有效，未传时则取企业配置的值；若开启校验，
+    /// 当开具非自然人标记的数电普票（电子）时，将限制对于“购买方名称长度小于等于4位”的发票的开具）
+    /// </summary>
+    [JsonPropertyName("naturalPersonVerifyFlag")]
+    [JsonProperty("naturalPersonVerifyFlag")]
+    public string NaturalPersonVerifyFlag { get; set; }
     /// <summary>
     /// 发票明细，支持填写商品明细最大2000行（包含折扣行、被折扣行）
     /// </summary>
